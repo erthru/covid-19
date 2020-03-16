@@ -26,8 +26,8 @@
                     <v-icon size="32px">mdi-bacteria</v-icon>
                 </v-col>
 
-                <v-col cols="4">
-                    <h1 class="white--text mt-2">COVID 19</h1>
+                <v-col cols="6">
+                    <h1 class="white--text">COVID 19</h1>
                 </v-col>
             </v-row>
 
