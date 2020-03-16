@@ -10,8 +10,8 @@
 
         <h2>Current Number Of Cases</h2>
 
-        <v-row class="pl-8 pr-8 mt-2">
-            <v-col xs="12" sm="6" md="3">
+        <v-row class="mt-2">
+            <v-col cols="12" sm="6" md="3">
                 <v-card color="pink lighten-1 white--text" class="pa-4" height="140px">
                     <center>
                         <span class="title font-weight-bold">INFECTED</span>
@@ -22,7 +22,7 @@
             </v-col>
 
 
-            <v-col xs="12" sm="6" md="3">
+            <v-col cols="12" sm="6" md="3">
                 <v-card color="green lighten-1 white--text" class="pa-4" height="140px">
                     <center>
                         <span class="title font-weight-bold">RECOVERED</span>
@@ -32,7 +32,7 @@
                 </v-card>
             </v-col>
 
-            <v-col xs="12" sm="6" md="3">
+            <v-col cols="12" sm="6" md="3">
                 <v-card color="red lighten-1 white--text" class="pa-4" height="140px">
                     <center>
                         <span class="title font-weight-bold">DEATHS</span>
@@ -42,7 +42,7 @@
                 </v-card>
             </v-col>
 
-            <v-col xs="12" sm="6" md="3">
+            <v-col cols="12" sm="6" md="3">
                 <v-card color="brown lighten-1 white--text" class="pa-4" height="140px">
                     <center>
                         <span class="title font-weight-bold">INDONESIA</span>
@@ -69,7 +69,7 @@
         
         <center><v-progress-circular indeterminate color="white" class="mt-4" v-if="isArticleLoading"/></center>
 
-        <masonry class="pl-8 pr-8 mt-2" :cols="masonryCols">
+        <masonry class="mt-2" :cols="masonryCols" style="margin-left: -14px; margin-right: -15px">
             <div class="pa-4" v-for="(article, index) in articles" :key="index">
                 <v-card class="pa-4" color="grey darken-3">
                     <v-row v-if="isModeXS">
