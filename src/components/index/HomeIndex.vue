@@ -180,7 +180,7 @@ export default {
                 this.isArticleLoadingNext = true;
             }
 
-            this.$http.get("https://newsapi.org/v2/everything?q=covid%2019&apiKey=29c67250fa56435bb36b8ac010ab0a3f&sortBy=relevancy&pageSize=8&page="+this.page).then(res => {
+            this.$http.get("https://newsapi.org/v2/everything?q=covid%2019&sortBy=relevancy&pageSize=8&page="+this.page, { apiKey: "29c67250fa56435bb36b8ac010ab0a3f" }).then(res => {
                 res.data.articles.forEach(article => {
                     this.articles.push(article);
                 })
