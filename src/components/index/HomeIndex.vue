@@ -60,7 +60,11 @@
             </v-col>
         </v-row>
 
-        <center><span class="grey--text">Last update: {{ lastUpdate }}</span></center>
+        <GmapMap :center="{lat:-2.3932707, lng:108.8497264}" :zoom="2.6" map-type-id="terrain" style="width: 100%; height: 500px" class="mt-4" :options="{styles: mapsStyles, minZoom: 1}">
+            <GmapMarker v-for="(infectedLocation, index) in infectedLocations" :key="index" :clickable="true" :position="infectedLocation.position" v-on:click="selectedInfectedLocation = infectedLocation; markerOnClick()"/>
+        </GmapMap>
+
+        <center><div class="grey--text mt-4">Last update: {{ lastUpdate }}</div></center>
 
         <br />
         <br />
@@ -83,6 +87,7 @@
                             <a class="headline white--text font-weight-meidum" :href="article.url" target="blank">{{ article.title }}</a>
                             <br />
                             <p class="grey--text text--lighten-1">{{ article.description }}</p>
+                            <label class="grey--text">{{ new Date(article.publishedAt).toString().replace("GMT+0800", "") }}</label>
                         </v-col>
                     </v-row>
 
@@ -107,6 +112,19 @@
         <center><v-progress-circular indeterminate color="white" class="mt-4" v-if="isArticleLoadingNext"/></center>
 
         <br />
+
+        <!-- outside content -->
+        <v-dialog v-model="isInfoDialogShowing" max-width="290px">
+            <v-card class="pa-6">
+                <div class="headline pb-2"><strong>{{ selectedInfectedLocation.provinceState != null ? selectedInfectedLocation.provinceState : selectedInfectedLocation.countryRegion }}</strong></div>
+                <div>Infected: {{ selectedInfectedLocation.confirmed }}</div>
+                <div>Recovered: {{ selectedInfectedLocation.recovered }}</div>
+                <div>Deaths: {{ selectedInfectedLocation.deaths }}</div>
+                <div>Last Update: {{ new Date(selectedInfectedLocation.lastUpdate).toString().replace("GMT+0800", "") }}</div>
+
+                <v-btn class="d-flex ml-auto mt-3" color="red darken-3" text v-on:click="isInfoDialogShowing = false">Close</v-btn>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -128,17 +146,96 @@ export default {
         isArticleLoading: true,
         isArticleLoadingNext: false,
         masonryCols: 2,
-
-        // data
         infected: 0,
         recovered: 0,
         deaths: 0,
         lastUpdate: "-",
-
-        // indonesia
         indonesiaInfected: 0,
         indonesiaRecovered: 0,
-        indonesiaDeaths: 0
+        indonesiaDeaths: 0,
+        infectedLocations: [],
+        selectedInfectedLocation: {},
+        isInfoDialogShowing: false,
+        mapsStyles: [
+            {elementType: 'geometry', stylers: [{color: '#545454'}]},
+            {elementType: 'labels.text.stroke', stylers: [{color: '#545454'}]},
+            {elementType: 'labels.text.fill', stylers: [{color: '#ffffff'}]},
+            {
+              featureType: 'administrative.locality',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#ffffff'}]
+            },
+            {
+              featureType: 'poi',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#d59563'}]
+            },
+            {
+              featureType: 'poi.park',
+              elementType: 'geometry',
+              stylers: [{color: '#263c3f'}]
+            },
+            {
+              featureType: 'poi.park',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#6b9a76'}]
+            },
+            {
+              featureType: 'road',
+              elementType: 'geometry',
+              stylers: [{color: '#38414e'}]
+            },
+            {
+              featureType: 'road',
+              elementType: 'geometry.stroke',
+              stylers: [{color: '#212a37'}]
+            },
+            {
+              featureType: 'road',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#9ca5b3'}]
+            },
+            {
+              featureType: 'road.highway',
+              elementType: 'geometry',
+              stylers: [{color: '#746855'}]
+            },
+            {
+              featureType: 'road.highway',
+              elementType: 'geometry.stroke',
+              stylers: [{color: '#1f2835'}]
+            },
+            {
+              featureType: 'road.highway',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#f3d19c'}]
+            },
+            {
+              featureType: 'transit',
+              elementType: 'geometry',
+              stylers: [{color: '#2f3948'}]
+            },
+            {
+              featureType: 'transit.station',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#d59563'}]
+            },
+            {
+              featureType: 'water',
+              elementType: 'geometry',
+              stylers: [{color: '#252626'}]
+            },
+            {
+              featureType: 'water',
+              elementType: 'labels.text.fill',
+              stylers: [{color: '#515c6d'}]
+            },
+            {
+              featureType: 'water',
+              elementType: 'labels.text.stroke',
+              stylers: [{color: '#252626'}]
+            }
+        ]
     }),
     mounted(){
         this.isModeXS = this.$vuetify.breakpoint.name == "xs";
@@ -170,6 +267,24 @@ export default {
                 this.indonesiaRecovered = res.data.recovered.value;
                 this.indonesiaDeaths = res.data.deaths.value;
             });
+
+            this.$http.get("https://covid19.mathdro.id/api/confirmed").then(res => {
+                res.data.forEach(item => {
+                    this.infectedLocations.push({
+                        provinceState: item.provinceState,
+                        countryRegion: item.countryRegion,
+                        lastUpdate: item.lastUpdate,
+                        confirmed: item.confirmed,
+                        recovered: item.recovered,
+                        deaths: item.deaths,
+                        active: item.active,
+                        position: {
+                            lat: item.lat,
+                            lng: item.long
+                        }
+                    });
+                });
+            });
         },
         loadArticle(){
             if(this.page == 1){
@@ -181,15 +296,19 @@ export default {
             }
 
             this.$http.get("https://newsapi.org/v2/everything?q=covid%2019&sortBy=relevancy&apiKey=29c67250fa56435bb36b8ac010ab0a3f&pageSize=8&page="+this.page).then(res => {
-                res.data.articles.forEach(article => {
-                    this.articles.push(article);
-                })
+                res.data.articles.forEach(item => {
+                    this.articles.push(item);
+                });
 
                 this.articleTotal = res.data.totalResults;
                 
                 this.isArticleLoading = false;
                 this.isArticleLoadingNext = false;
             });
+        },
+        markerOnClick(){
+            console.log(this.selectedInfectedLocation);
+            this.isInfoDialogShowing = true;
         }
     }
 }
