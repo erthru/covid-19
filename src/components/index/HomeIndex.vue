@@ -307,7 +307,6 @@ export default {
             });
         },
         markerOnClick(){
-            console.log(this.selectedInfectedLocation);
             this.isInfoDialogShowing = true;
         }
     }
