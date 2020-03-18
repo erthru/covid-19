@@ -84,7 +84,7 @@
                         </v-col>
 
                         <v-col cols="12">
-                            <a class="headline white--text font-weight-meidum" :href="article.url" target="blank">{{ article.title }}</a>
+                            <a class="headline white--text font-weight-medium" :href="article.url" target="blank">{{ article.title }}</a>
                             <br />
                             <p class="grey--text text--lighten-1">{{ article.description }}</p>
                             <label class="grey--text">{{ new Date(article.publishedAt).toString().replace("GMT+0800", "") }}</label>
@@ -99,7 +99,7 @@
                         </v-col>
 
                         <v-col cols="11" class="pl-8">
-                            <a class="headline white--text font-weight-meidum" :href="article.url" target="blank">{{ article.title }}</a>
+                            <a class="headline white--text font-weight-medium" :href="article.url" target="blank">{{ article.title }}</a>
                             <br />
                             <p class="grey--text text--lighten-1">{{ article.description }}</p>
                             <label class="grey--text">{{ new Date(article.publishedAt).toString().replace("GMT+0800", "") }}</label>
