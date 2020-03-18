@@ -295,7 +295,7 @@ export default {
                 this.isArticleLoadingNext = true;
             }
 
-            this.$http.get("https://newsapi.org/v2/everything?q=covid%2019&sortBy=relevancy&apiKey=29c67250fa56435bb36b8ac010ab0a3f&pageSize=8&page="+this.page).then(res => {
+            this.$http.get("https://newsapi.org/v2/everything?q=covid%2019&sortBy=publishedAt&apiKey=29c67250fa56435bb36b8ac010ab0a3f&pageSize=8&page="+this.page).then(res => {
                 res.data.articles.forEach(item => {
                     this.articles.push(item);
                 });
