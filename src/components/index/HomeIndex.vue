@@ -60,11 +60,28 @@
             </v-col>
         </v-row>
 
+        <br />
+        <br />
+
+        <h2>On Maps</h2>
+
         <GmapMap :center="{lat:-2.3932707, lng:108.8497264}" :zoom="2.6" map-type-id="terrain" style="width: 100%; height: 500px" class="mt-4" :options="{styles: mapsStyles, minZoom: 1}">
             <GmapMarker v-for="(infectedLocation, index) in infectedLocations" :key="index" :clickable="true" :position="infectedLocation.position" v-on:click="selectedInfectedLocation = infectedLocation; markerOnClick()"/>
         </GmapMap>
 
-        <center><div class="grey--text mt-4">Last update: {{ lastUpdate }}</div></center>
+        <br />
+        <br />
+
+        <h2>On Table</h2>
+
+        <v-data-table :headers="tblHeadersWorld" :items="tblItemsWorld" :loading="tblIsLoadingWorld" dark class="grey darken-3 mt-4"/>
+
+        <br />
+        <br />
+
+        <h2>On Table (Indonesia)</h2>
+
+        <v-data-table :headers="tblHeadersIndonesia" :items="tblItemsIndonesia" :loading="tblIsLoadingIndonesia" dark class="grey darken-3 mt-4"/>
 
         <br />
         <br />
@@ -116,7 +133,7 @@
         <!-- outside content -->
         <v-dialog v-model="isInfoDialogShowing" max-width="290px">
             <v-card class="pa-6">
-                <div class="headline pb-2"><strong>{{ selectedInfectedLocation.provinceState != null ? selectedInfectedLocation.provinceState : selectedInfectedLocation.countryRegion }}</strong></div>
+                <div class="headline pb-2"><strong>{{ selectedInfectedLocation.countryRegion }}</strong></div>
                 <div>Infected: {{ selectedInfectedLocation.confirmed }}</div>
                 <div>Recovered: {{ selectedInfectedLocation.recovered }}</div>
                 <div>Deaths: {{ selectedInfectedLocation.deaths }}</div>
@@ -149,7 +166,6 @@ export default {
         infected: 0,
         recovered: 0,
         deaths: 0,
-        lastUpdate: "-",
         indonesiaInfected: 0,
         indonesiaRecovered: 0,
         indonesiaDeaths: 0,
@@ -235,7 +251,31 @@ export default {
               elementType: 'labels.text.stroke',
               stylers: [{color: '#252626'}]
             }
-        ]
+        ],
+
+        // table world
+        tblHeadersWorld: [
+            { text: "No", value: "no" },
+            { text: "Country", value: "country" },
+            { text: "Infected", value: "infected" },
+            { text: "Recovered", value: "recovered" },
+            { text: "Deaths", value: "deaths" },
+            { text: "Last Update", value: "lastUpdate" },
+        ],
+        tblItemsWorld: [],
+        tblIsLoadingWorld: false,
+
+        // table indonesia
+        tblHeadersIndonesia: [
+            { text: "No", value: "no" },
+            { text: "Province", value: "province" },
+            { text: "Infected", value: "infected" },
+            { text: "Recovered", value: "recovered" },
+            { text: "Deaths", value: "deaths" },
+            { text: "Last Update", value: "lastUpdate" },
+        ],
+        tblItemsIndonesia: [],
+        tblIsLoadingIndonesia: false,
     }),
     mounted(){
         this.isModeXS = this.$vuetify.breakpoint.name == "xs";
@@ -255,35 +295,71 @@ export default {
     },
     methods:{
         loadCases(){
-            this.$http.get("https://covid19.mathdro.id/api").then(res => {
-                this.infected = res.data.confirmed.value;
-                this.recovered = res.data.recovered.value;
-                this.deaths = res.data.deaths.value;
-                this.lastUpdate = (new Date(res.data.lastUpdate)).toString().replace("GMT+0800", "");
-            });
+            this.tblIsLoadingWorld = true;
+            this.$http.get("https://api.kawalcorona.com/").then(res => {
+                var index = 0;
+                var totalInfected = 0;
+                var totalRecovered = 0;
+                var totalDeaths = 0;                
 
-            this.$http.get("https://covid19.mathdro.id/api/countries/ID").then(res => {
-                this.indonesiaInfected = res.data.confirmed.value;
-                this.indonesiaRecovered = res.data.recovered.value;
-                this.indonesiaDeaths = res.data.deaths.value;
-            });
-
-            this.$http.get("https://covid19.mathdro.id/api/confirmed").then(res => {
                 res.data.forEach(item => {
+                    index += 1;
+                    totalInfected += item.attributes.Confirmed;
+                    totalRecovered += item.attributes.Recovered;
+                    totalDeaths += item.attributes.Deaths;
+
                     this.infectedLocations.push({
-                        provinceState: item.provinceState,
-                        countryRegion: item.countryRegion,
-                        lastUpdate: item.lastUpdate,
-                        confirmed: item.confirmed,
-                        recovered: item.recovered,
-                        deaths: item.deaths,
-                        active: item.active,
+                        countryRegion: item.attributes.Country_Region,
+                        lastUpdate: item.attributes.Last_Update,
+                        confirmed: item.attributes.Confirmed,
+                        recovered: item.attributes.Recovered,
+                        deaths: item.attributes.Deaths,
+                        active: item.attributes.Active,
                         position: {
-                            lat: item.lat,
-                            lng: item.long
+                            lat: item.attributes.Lat,
+                            lng: item.attributes.Long_
                         }
                     });
+
+                    this.tblItemsWorld.push({
+                        no: index,
+                        country: item.attributes.Country_Region,
+                        infected: item.attributes.Confirmed,
+                        recovered: item.attributes.Recovered,
+                        deaths: item.attributes.Deaths,
+                        lastUpdate: new Date(item.attributes.Last_Update).toString().replace("GMT+0800 (Central Indonesia Time)", "")
+                    });
+
+                    if(item.attributes.Country_Region == "Indonesia"){
+                        this.indonesiaInfected = item.attributes.Confirmed
+                        this.indonesiaRecovered = item.attributes.Recovered
+                        this.indonesiaDeaths = item.attributes.Deaths
+                    }
                 });
+
+                this.tblIsLoadingWorld = false;
+                this.infected = totalInfected;
+                this.recovered = totalRecovered;
+                this.deaths = totalDeaths;
+            });
+
+            this.tblIsLoadingIndonesia = true;
+            this.$http.get("https://api.kawalcorona.com/indonesia/provinsi/").then(res => {
+                var index = 0;
+
+                res.data.forEach(item => {
+                    index += 1;
+
+                    this.tblItemsIndonesia.push({
+                        no: index,
+                        province: item.attributes.Provinsi,
+                        infected: item.attributes.Kasus_Posi,
+                        recovered: item.attributes.Kasus_Semb,
+                        deaths: item.attributes.Kasus_Meni
+                    });
+                });
+
+                this.tblIsLoadingIndonesia = false;
             });
         },
         loadArticle(){

@@ -7,7 +7,7 @@
 
         <h4>Api Used:</h4>
         <ul>
-            <li><a class="white--text" href="https://covid19.mathdro.id/api/">https://covid19.mathdro.id/api/</a></li>
+            <li><a class="white--text" href="https://api.kawalcorona.com/">https://api.kawalcorona.com/</a></li>
             <li><a class="white--text" href="https://newsapi.org/">https://newsapi.org/</a></li>
         </ul>
     </div>

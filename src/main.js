@@ -1,7 +1,7 @@
-import Vue from 'vue'
-import App from './App.vue'
-import './registerServiceWorker'
-import router from './router'
+import Vue from 'vue';
+import App from './App.vue';
+import './registerServiceWorker';
+import router from './router';
 import Vuetify from 'vuetify/lib';
 import Axios from 'axios';
 import VueNumberAnimation from "vue-number-animation";
