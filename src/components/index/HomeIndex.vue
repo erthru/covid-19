@@ -272,7 +272,6 @@ export default {
             { text: "Infected", value: "infected" },
             { text: "Recovered", value: "recovered" },
             { text: "Deaths", value: "deaths" },
-            { text: "Last Update", value: "lastUpdate" },
         ],
         tblItemsIndonesia: [],
         tblIsLoadingIndonesia: false,
