@@ -20,7 +20,7 @@
             </v-container>
         </v-content>
 
-        <v-navigation-drawer v-model="drawer" absolute temporary dark>
+        <v-navigation-drawer v-model="drawer" fixed temporary dark>
             <v-row class="pt-8 pb-4 mr-2" justify="center">
                 <v-col cols="2" class="mr-3">
                     <v-icon size="32px">mdi-bacteria</v-icon>

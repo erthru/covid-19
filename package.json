@@ -15,7 +15,6 @@
     "vue": "^2.6.11",
     "vue-headful": "^2.1.0",
     "vue-masonry-css": "^1.0.3",
-    "vue-number-animation": "^1.0.5",
     "vue-router": "^3.1.5",
     "vue2-google-maps": "^0.10.7",
     "vuetify": "^2.2.11"

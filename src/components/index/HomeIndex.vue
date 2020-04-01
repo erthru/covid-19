@@ -16,7 +16,7 @@
                     <center>
                         <span class="title font-weight-bold">INFECTED</span>
                         <br />
-                        <number from="0" :to="infected" class="display-2 pt-2"/>
+                        <span class="display-2 pt-2">{{ infected }}</span>
                     </center>
                 </v-card>
             </v-col>
@@ -27,7 +27,7 @@
                     <center>
                         <span class="title font-weight-bold">RECOVERED</span>
                         <br />
-                        <number from="0" :to="recovered" class="display-2 pt-2" />
+                        <span class="display-2 pt-2">{{ recovered }}</span>
                     </center>
                 </v-card>
             </v-col>
@@ -37,7 +37,7 @@
                     <center>
                         <span class="title font-weight-bold">DEATHS</span>
                         <br />
-                        <number from="0" :to="deaths" class="display-2 pt-2" />
+                        <span class="display-2 pt-2">{{ deaths }}</span>
                     </center>
                 </v-card>
             </v-col>
@@ -48,13 +48,13 @@
                         <span class="title font-weight-bold">INDONESIA</span>
                         <br />
                         
-                        <number from="0" :to="indonesiaInfected" /><span class="ml-1">Infected</span>
+                        {{ indonesiaInfected }}<span class="ml-1">Infected</span>
                         <br />
 
-                        <number from="0" :to="indonesiaRecovered" /><span class="ml-1">Recovered</span>
+                        {{ indonesiaRecovered }}<span class="ml-1">Recovered</span>
                         <br />
 
-                        <number from="0" :to="indonesiaDeaths" /><span class="ml-1">Deaths</span>
+                        {{ indonesiaDeaths }}<span class="ml-1">Deaths</span>
                     </center>
                 </v-card>
             </v-col>
@@ -86,7 +86,7 @@
         <br />
         <br />
 
-        <h2>Current Updates</h2>
+        <h2>News</h2>
         
         <center><v-progress-circular indeterminate color="white" class="mt-4" v-if="isArticleLoading"/></center>
 
@@ -137,7 +137,7 @@
                 <div>Infected: {{ selectedInfectedLocation.confirmed }}</div>
                 <div>Recovered: {{ selectedInfectedLocation.recovered }}</div>
                 <div>Deaths: {{ selectedInfectedLocation.deaths }}</div>
-                <div>Last Update: {{ new Date(selectedInfectedLocation.lastUpdate).toString().replace("GMT+0800", "") }}</div>
+                <div>Last Update: {{ new Date(selectedInfectedLocation.lastUpdate).toString().replace("GMT+0800 (Central Indonesia Time)", "") }}</div>
 
                 <v-btn class="d-flex ml-auto mt-3" color="red darken-3" text v-on:click="isInfoDialogShowing = false">Close</v-btn>
             </v-card>
@@ -310,10 +310,10 @@ export default {
                     this.infectedLocations.push({
                         countryRegion: item.attributes.Country_Region,
                         lastUpdate: item.attributes.Last_Update,
-                        confirmed: item.attributes.Confirmed,
-                        recovered: item.attributes.Recovered,
-                        deaths: item.attributes.Deaths,
-                        active: item.attributes.Active,
+                        confirmed: item.attributes.Confirmed.toLocaleString(),
+                        recovered: item.attributes.Recovered.toLocaleString(),
+                        deaths: item.attributes.Deaths.toLocaleString(),
+                        active: item.attributes.Active.toLocaleString(),
                         position: {
                             lat: item.attributes.Lat,
                             lng: item.attributes.Long_
@@ -323,23 +323,23 @@ export default {
                     this.tblItemsWorld.push({
                         no: index,
                         country: item.attributes.Country_Region,
-                        infected: item.attributes.Confirmed,
-                        recovered: item.attributes.Recovered,
-                        deaths: item.attributes.Deaths,
+                        infected: item.attributes.Confirmed.toLocaleString(),
+                        recovered: item.attributes.Recovered.toLocaleString(),
+                        deaths: item.attributes.Deaths.toLocaleString(),
                         lastUpdate: new Date(item.attributes.Last_Update).toString().replace("GMT+0800 (Central Indonesia Time)", "")
                     });
 
                     if(item.attributes.Country_Region == "Indonesia"){
-                        this.indonesiaInfected = item.attributes.Confirmed
-                        this.indonesiaRecovered = item.attributes.Recovered
-                        this.indonesiaDeaths = item.attributes.Deaths
+                        this.indonesiaInfected = item.attributes.Confirmed.toLocaleString()
+                        this.indonesiaRecovered = item.attributes.Recovered.toLocaleString()
+                        this.indonesiaDeaths = item.attributes.Deaths.toLocaleString()
                     }
                 });
 
                 this.tblIsLoadingWorld = false;
-                this.infected = totalInfected;
-                this.recovered = totalRecovered;
-                this.deaths = totalDeaths;
+                this.infected = totalInfected.toLocaleString();
+                this.recovered = totalRecovered.toLocaleString();
+                this.deaths = totalDeaths.toLocaleString();
             });
 
             this.tblIsLoadingIndonesia = true;
@@ -352,9 +352,9 @@ export default {
                     this.tblItemsIndonesia.push({
                         no: index,
                         province: item.attributes.Provinsi,
-                        infected: item.attributes.Kasus_Posi,
-                        recovered: item.attributes.Kasus_Semb,
-                        deaths: item.attributes.Kasus_Meni
+                        infected: item.attributes.Kasus_Posi.toLocaleString(),
+                        recovered: item.attributes.Kasus_Semb.toLocaleString(),
+                        deaths: item.attributes.Kasus_Meni.toLocaleString()
                     });
                 });
 
@@ -383,6 +383,9 @@ export default {
         },
         markerOnClick(){
             this.isInfoDialogShowing = true;
+        },
+        numberFormat(number){
+            return number.toLocaleString()
         }
     }
 }
