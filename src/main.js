@@ -4,14 +4,12 @@ import './registerServiceWorker';
 import router from './router';
 import Vuetify from 'vuetify/lib';
 import Axios from 'axios';
-import VueNumberAnimation from "vue-number-animation";
 import VueMasonry from "vue-masonry-css";
 import * as VueGoogleMaps from "vue2-google-maps";
 
 Vue.config.productionTip = false
 
 Vue.use(Vuetify);
-Vue.use(VueNumberAnimation);
 Vue.use(VueMasonry);
 Vue.use(VueGoogleMaps, {
   load: {
