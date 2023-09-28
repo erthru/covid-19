@@ -13,7 +13,7 @@ Vue.use(Vuetify);
 Vue.use(VueMasonry);
 Vue.use(VueGoogleMaps, {
   load: {
-    key: "AIzaSyBsKurseekHERPXhnmngSSzS0USrRHymk4",
+    key: "#",
     libraries: "places"
   }
 });
